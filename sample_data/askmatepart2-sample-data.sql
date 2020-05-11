@@ -106,14 +106,8 @@ CREATE TABLE tag (
     name text
 
 );
-DROP TABLE IF EXISTS users;
 
-CREATE TABLE users (
-	id SERIAL NOT NULL,
-	username varchar(16) NOT NULL,
-	password varchar(32) NOT NULL,
-	PRIMARY KEY (id)
-);
+
 
 
 
@@ -278,3 +272,12 @@ ALTER TABLE question_tag DROP CONSTRAINT fk_tag_id;
  FOREIGN KEY (answer_id)
  REFERENCES answer(id)
  ON DELETE CASCADE ON UPDATE CASCADE;
+
+DROP TABLE IF EXISTS users;
+
+CREATE TABLE users (
+    id SERIAL NOT NULL,
+    username varchar(16) NOT NULL,
+    password varchar(32) NOT NULL,
+    PRIMARY KEY (id)
+    );
