@@ -230,7 +230,7 @@ def register():
         username = request.form.get('username')
         password = request.form.get('password')
         user_registered = data_manager.register_user(username, password)
-        if user_registered == False:
+        if not user_registered:
             flash("Username/email already taken")
             return redirect(url_for("register"))
         return redirect(url_for("main_page"))
