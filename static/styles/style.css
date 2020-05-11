@@ -9,14 +9,14 @@
     text-decoration: none;
 }
 
-
-
-
 h2 {
+    padding: 10px;
     color: #485F6E;
 }
 
 h3 {
+    padding: 7px
+    font-size: 23px;
     color: #485F6E;
 }
 
@@ -25,12 +25,16 @@ h4 {
 }
 
 body {
+    background: url(background.jpg) no-repeat center center fixed;
+    background-size: cover;
     border-radius: 10px;
     background-color: seashell;
 }
 
 
 table {
+
+    padding: 70px;
     border-radius: 10px;
     background-color: #BFDDE0;
 }
@@ -43,11 +47,14 @@ table {
 }
 
 #search {
-    height: 25px;
-    width: 500px;
-    border-radius: 3px
-
+    padding: 15px 30px;
+    height: 30px;
+    width: 230px;
+    border-radius: 3px;
+    background-color: seashell
 }
+
+
 
 #link_btn:link {
     text-decoration: none;
@@ -81,10 +88,10 @@ table {
 
 .square_btn {
     alignment: right;
-    height: 30px;
+    height: 35px;
     width: 200px;
     display: inline-block;
-    padding: 0.3em 1em;
+    padding: 0.1em 1em;
     color: #30799B;
     border-radius: 3px;
     transition: .4s;
@@ -141,4 +148,76 @@ table {
 /* Change the background color of the dropdown button when the dropdown content is shown */
 .dropdown:hover .dropbtn {
   background-color: #3e8e41;
+}
+
+
+.login-box {
+    width: 320px;
+    height: 420px;
+    background: rgba(0,0,0,0.5);
+    color: #fff;
+    top: 50%;
+    left: 50%;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    box-sizing: border-box;
+    padding: 70px 30px;
+}
+
+.avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    position: absolute;
+    top: -50px;
+    left: calc(50% - 50px);
+}
+
+
+
+.login-box p{
+    margin: 0;
+    padding: 0;
+    font-weight: bold;
+}
+
+.login-box input{
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.login-box input[type="text"], input[type="password"] {
+    border: none;
+    border-bottom: 1px solid #fff;
+    background: transparent;
+    outline: none;
+    height: 40px;
+    color: #fff;
+    font-size: 16px;
+}
+
+.login-box input[type="submit"] {
+    border: none;
+    outline: none;
+    height: 40px;
+    background: #1c8abd;
+    color: #fff;
+    font-size: 18px;
+    border-radius: 20px;
+}
+
+.login-box input[type="submit"]:hover {
+    cursor: pointer;
+    background: #39dc79;
+    color: #000;
+}
+
+.login-box a {
+    text-decoration: none;
+    font-size: 14px;
+    color: #fff;
+}
+
+.login-box a:hover {
+    color: #39dc79;
 }
