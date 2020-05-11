@@ -1,3 +1,6 @@
+import hashlib
+
+from psycopg2._psycopg import encrypt_password
 from psycopg2.extras import RealDictCursor
 
 import database_common
@@ -29,7 +32,6 @@ def get_table_comment(cursor: RealDictCursor) -> list:
         """
     cursor.execute(query)
     return cursor.fetchall()
-
 
 
 @database_common.connection_handler
@@ -148,7 +150,6 @@ def get_comment_by_id(cursor: RealDictCursor, id: int) -> list:
     return cursor.fetchall()
 
 
-
 @database_common.connection_handler
 def get_comment_by_question_id(cursor: RealDictCursor, question_id: int) -> list:
     """
@@ -167,7 +168,6 @@ def get_comment_by_question_id(cursor: RealDictCursor, question_id: int) -> list
     args = {'question_id': question_id}
     cursor.execute(query, args)
     return cursor.fetchall()
-
 
 
 @database_common.connection_handler
@@ -232,7 +232,6 @@ def write_answer(cursor: RealDictCursor, submission_time: str, vote_number: int,
     return "New value added"
 
 
-
 @database_common.connection_handler
 def write_comment(cursor: RealDictCursor, question_id: int, message: str,
                   submission_time: str, edited_count: int) -> list:
@@ -247,7 +246,6 @@ def write_comment(cursor: RealDictCursor, question_id: int, message: str,
     return "New value added"
 
 
-
 @database_common.connection_handler
 def delete_comment(cursor: RealDictCursor, comment_id: int) -> str:
     query = """
@@ -257,7 +255,6 @@ def delete_comment(cursor: RealDictCursor, comment_id: int) -> str:
     args = {'comment_id': comment_id}
     cursor.execute(query, args)
     return "Comment deleted"
-
 
 
 @database_common.connection_handler
@@ -451,12 +448,14 @@ answer.vote_number AS answer_vote_number, answer.message AS answer_message, answ
 
 
 @database_common.connection_handler
-def comment_answer(cursor: RealDictCursor, answer_id: int, message: str, submission_time: str, edited_count: int) -> list:
+def comment_answer(cursor: RealDictCursor, answer_id: int, message: str, submission_time: str,
+                   edited_count: int) -> list:
     query = """
             INSERT INTO comment (answer_id, message,submission_time,edited_count)
             VALUES (%(answer_id)s,%(message)s,%(submission_time)s,%(edited_count)s)
             """
-    args = {'answer_id': answer_id, 'message': message, 'submission_time': submission_time, 'edited_count': edited_count }
+    args = {'answer_id': answer_id, 'message': message, 'submission_time': submission_time,
+            'edited_count': edited_count}
     cursor.execute(query, args)
     return "New value added"
 
@@ -491,7 +490,7 @@ def tags(cursor: RealDictCursor, question_id: int) -> list:
             ON question_tag.tag_id=tag.id
             WHERE question_tag.question_id = %(question_id)s
             """
-    args = {'question_id':  question_id}
+    args = {'question_id': question_id}
     cursor.execute(query, args)
     return cursor.fetchall()
 
@@ -526,3 +525,36 @@ def add_new_tag(cursor: RealDictCursor, new_tag: str) -> list:
     args = {'new_tag': new_tag}
     cursor.execute(query, args)
     return "DONE"
+
+
+@database_common.connection_handler
+def username_exists(cursor: RealDictCursor, username: str):
+    query = """
+        SELECT *
+        FROM users
+        WHERE username = %(username)s;
+         """
+    args = {'username': username}
+    cursor.execute(query, args)
+    return cursor.fetchone()
+
+
+@database_common.connection_handler
+def register_user(cursor: RealDictCursor, username: str, text_password: str):
+    """
+    Checks for valid username.
+    If username is valid, inserts the new user into the database
+    """
+    if username_exists(username):
+        return False
+
+    query = """
+    INSERT INTO users (username,password)
+    VALUES (%(username)s,%(password)s)
+           """
+    args = {"username": username, "password": encrypt_password(text_password)}
+    return cursor.execute(query, args)
+
+
+def encrypt_password(password):
+    return hashlib.md5(password.encode()).hexdigest()

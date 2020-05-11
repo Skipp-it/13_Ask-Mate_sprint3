@@ -106,8 +106,14 @@ CREATE TABLE tag (
     name text
 
 );
+DROP TABLE IF EXISTS users;
 
-
+CREATE TABLE users (
+	id SERIAL NOT NULL,
+	username varchar(16) NOT NULL,
+	password varchar(32) NOT NULL,
+	PRIMARY KEY (id)
+);
 
 
 
