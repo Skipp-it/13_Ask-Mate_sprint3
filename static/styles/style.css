@@ -9,14 +9,14 @@
     text-decoration: none;
 }
 
-
-
-
 h2 {
+    padding: 10px;
     color: #485F6E;
 }
 
 h3 {
+    padding: 7px
+    font-size: 23px;
     color: #485F6E;
 }
 
@@ -25,12 +25,15 @@ h4 {
 }
 
 body {
+
     border-radius: 10px;
     background-color: seashell;
 }
 
 
 table {
+
+    padding: 70px;
     border-radius: 10px;
     background-color: #BFDDE0;
 }
@@ -43,11 +46,14 @@ table {
 }
 
 #search {
-    height: 25px;
-    width: 500px;
-    border-radius: 3px
-
+    padding: 15px 30px;
+    height: 30px;
+    width: 230px;
+    border-radius: 3px;
+    background-color: seashell
 }
+
+
 
 #link_btn:link {
     text-decoration: none;
@@ -81,10 +87,10 @@ table {
 
 .square_btn {
     alignment: right;
-    height: 30px;
+    height: 35px;
     width: 200px;
     display: inline-block;
-    padding: 0.3em 1em;
+    padding: 0.1em 1em;
     color: #30799B;
     border-radius: 3px;
     transition: .4s;

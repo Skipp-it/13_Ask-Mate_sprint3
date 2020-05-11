@@ -4,7 +4,6 @@
 {% block content %}
 
 <body>
-    <a href="/list">Home</a>
     <div id="subtitle_name"><h2>Question: {{ data.title }}</h2></div>
 <table>
     <thead>
@@ -15,7 +14,7 @@
             <td>
                 <h4>View Number</h4>
             </td>
-            <td>
+            <td colspan="3">
                 <h4>Vote Number</h4>
             </td>
             <td>
@@ -34,6 +33,8 @@
             <td>{{ data.submission_time }}</td>
             <td>{{ data.view_number }}</td>
             <td>{{ data.vote_number }}</td>
+            <td><button type="button"><a href="/question/{{ data.id }}/vote_up"><i class="fa fa-thumbs-o-up"></i></a></button></td>
+            <td><button type="button"><a href="/question/{{ data.id }}/vote_down"><i class="fa fa-thumbs-o-down"></i></a></button></td>
             <td>{{ data.title }}</td>
             <td>{{ data.message |e }}</td>
             <td><img src="{{ data.image }}" height="150" alt="image from url"></td>
