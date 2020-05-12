@@ -569,3 +569,5 @@ def users_data(cursor: RealDictCursor) -> list:
             """
     cursor.execute(query)
     return cursor.fetchall()
+"ceva"
+"vv"
