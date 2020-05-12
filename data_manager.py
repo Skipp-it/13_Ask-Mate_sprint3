@@ -573,4 +573,4 @@ def users_data(cursor: RealDictCursor) -> list:
 "ceva"
 "vv"
 
-eqwdekqdnq
+'eqwdekqdnq'
