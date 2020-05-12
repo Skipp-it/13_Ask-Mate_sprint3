@@ -1,9 +1,10 @@
-from flask import Flask, request, redirect, render_template, url_for, flash
+from flask import Flask, request, redirect, render_template, url_for, flash, session
 import data_manager
 from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = b'123'
+
 
 @app.route("/")
 def main_page():
@@ -229,12 +230,22 @@ def register():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-        user_registered = data_manager.register_user(username, password)
+        submission_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        user_registered = data_manager.register_user(username, password, submission_time)
         if user_registered == False:
             flash("Username/email already taken")
             return redirect(url_for("register"))
         return redirect(url_for("main_page"))
     return render_template("register.html")
+
+
+@app.route("/users")
+def users():
+    # if "logged_in" not in session:
+    #     flash("You are not logged in, please log in")
+    #     return redirect(url_for("register"))
+    users = data_manager.users_data()
+    return render_template("users.html", users=users)
 
 
 if __name__ == '__main__':
