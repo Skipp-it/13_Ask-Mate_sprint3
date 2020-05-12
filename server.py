@@ -255,5 +255,4 @@ if __name__ == '__main__':
     )
 
 
-"ceva"
-"Asdas"
+"ultima incercare"
