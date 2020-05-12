@@ -1,5 +1,4 @@
-import hashlib
-
+import bcrypt
 from psycopg2._psycopg import encrypt_password
 from psycopg2.extras import RealDictCursor
 
@@ -540,7 +539,7 @@ def username_exists(cursor: RealDictCursor, username: str):
 
 
 @database_common.connection_handler
-def register_user(cursor: RealDictCursor, username: str, text_password: str):
+def register_user(cursor: RealDictCursor, username: str, text_password: str, submission_time: int):
     """
     Checks for valid username.
     If username is valid, inserts the new user into the database
@@ -549,12 +548,26 @@ def register_user(cursor: RealDictCursor, username: str, text_password: str):
         return False
 
     query = """
-    INSERT INTO users (username,password)
-    VALUES (%(username)s,%(password)s)
+    INSERT INTO users (username,password,submission_time)
+    VALUES (%(username)s,%(password)s,%(submission_time)s)
            """
-    args = {"username": username, "password": encrypt_password(text_password)}
+    args = {"username": username, "password": encrypt_password(text_password), "submission_time": submission_time}
     return cursor.execute(query, args)
 
 
 def encrypt_password(password):
-    return hashlib.md5(password.encode()).hexdigest()
+    # By using bcrypt, the salt is saved into the hash itself
+    hashed_bytes = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    return hashed_bytes
+
+
+@database_common.connection_handler
+def users_data(cursor: RealDictCursor) -> list:
+    query = """
+        SELECT *
+        FROM users
+            """
+    cursor.execute(query)
+    return cursor.fetchall()
+"ceva"
+"vv"
