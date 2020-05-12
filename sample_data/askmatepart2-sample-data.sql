@@ -278,6 +278,11 @@ DROP TABLE IF EXISTS users;
 CREATE TABLE users (
     id SERIAL NOT NULL,
     username varchar(16) NOT NULL,
-    password varchar(32) NOT NULL,
+    password varchar(500) NOT NULL,
+    submission_time timestamp without time zone,
+    count_questions int,
+    count_answers int,
+    count_comments int,
+    reputation int,
     PRIMARY KEY (id)
-    );
+);
