@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, render_template, url_for, flash
+from flask import Flask, request, redirect, render_template, url_for, flash, session
 import data_manager
 from datetime import datetime
 
@@ -13,6 +13,7 @@ def main_page():
 
 @app.route("/list")
 def all_questions():
+
     questions = data_manager.get_table_question()
     ordered_direction = "desc"
     ordered_by = "submission_time"
@@ -235,6 +236,30 @@ def register():
             return redirect(url_for("register"))
         return redirect(url_for("main_page"))
     return render_template("register.html")
+
+#
+# @app.route('/login', methods=["GET", "POST"])
+# def login():
+#     if dm.is_logged_in():
+#         return redirect('/') #de schimbat cu url pentru cont utilizator
+#     if request.method == 'POST':
+#         username = request.form.get('username')
+#         typed_password = request.form.get('password')
+#         if dm.check_login(username, typed_password):
+#             session['username'] = username
+#             session['logged_in'] = True
+#             return redirect('/')        #de schimbat cu url pentru cont utilizator
+#         else:
+#             flash('invalid Username or Password')
+#             return redirect('/login')
+#     return render_template('login.html')
+#
+#
+# @app.route('/logout')
+# def logout():
+#     session.pop('username')
+#     session.pop('logged_in')
+#     return redirect(url_for('index'))
 
 
 if __name__ == '__main__':
