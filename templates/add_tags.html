@@ -1,7 +1,7 @@
 {% extends 'index.html' %}
 {% block content %}
 
-<a href="/list">Back to questions list</a>
+
 <form action="/question/{{ question_id }}" method="POST">
         {% for tag in tags %}
         <input type="radio" name="add_tag" value="{{tag.get('id','')}}"><span>{{ tag.get('name','') }}</span><br/>

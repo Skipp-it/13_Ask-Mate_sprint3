@@ -3,15 +3,15 @@
 {% block content %}
 
 <body>
-    <div id="search_bar">
+<!--    <div id="search_bar">-->
 
-        <form method="GET" action="/search">
-            <label for="search"></label>
-            <button type="submit" class="square_btn"><b>Search</b></button>
-            <input id="search" type="text" name="search_text" placeholder="Search"></input>
-            <br><br>
-         </form>
-    </div>
+<!--        <form method="GET" action="/search">-->
+<!--            <label for="search"></label>-->
+<!--            <button type="submit" class="square_btn"><b>Search</b></button>-->
+<!--            <input id="search" type="text" name="search_text" placeholder="Search"></input>-->
+<!--            <br><br>-->
+<!--         </form>-->
+<!--    </div>-->
 
 
     <table>
@@ -49,8 +49,6 @@
                 </form>
             </div>
         <br><br>
-        <button type="button" class="square_btn"><a href="/add_question">Add new question</a></button>
-
 
             {% for question in questions %}
 
@@ -64,6 +62,7 @@
                 <td>{{ question['message'] }}</td>
                 <td><img src="{{ question['image'] }}" height="150" alt="image from url"></td>
             </tr>
+
             {% endfor %}
         </tbody>
     </table>
