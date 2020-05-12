@@ -4,4 +4,4 @@ venv/
 .DS_Store
 database_common.py
 requirements.txt
-
+.vscode/
