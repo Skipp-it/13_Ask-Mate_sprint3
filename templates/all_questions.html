@@ -3,26 +3,14 @@
 {% block content %}
 
 <body>
-<!--    <div id="search_bar">-->
-
-<!--        <form method="GET" action="/search">-->
-<!--            <label for="search"></label>-->
-<!--            <button type="submit" class="square_btn"><b>Search</b></button>-->
-<!--            <input id="search" type="text" name="search_text" placeholder="Search"></input>-->
-<!--            <br><br>-->
-<!--         </form>-->
-<!--    </div>-->
-
-
     <table>
         <thead>
-
             <tr>
+                <td><h3>Title</h3></td>
+                <td><h3>Message</h3></td>
                 <td><h3>Submission Time</h3></td>
                 <td><h3>View Number</h3></td>
                 <td colspan="3"><h3>Vote Number</h3></td>
-                <td><h3>Title</h3></td>
-                <td><h3>Message</h3></td>
                 <td><h3>Image</h3></td>
             </tr>
         </thead>
@@ -53,14 +41,14 @@
             {% for question in questions %}
 
             <tr>
+                <td><a href="/question/{{ question['id'] }}"><strong>{{ question['title'] }}</strong></a></td>
+                <td>{{ question['message'] }}</td>
                 <td>{{ question['submission_time'] }}</td>
                 <td>{{ question['view_number'] }}</td>
                 <td>{{ question['vote_number'] }}</td>
-                <td><button type="button" ><a href="/question/{{ question['id'] }}/vote_up"><i class="fa fa-thumbs-o-up"></i></a></button></td>
-                <td><button type="button" ><a href="/question/{{ question['id'] }}/vote_down"><i class="fa fa-thumbs-o-down"></i></a></button></td>
-                <td><a href="/question/{{ question['id'] }}">{{ question['title'] }}</a></td>
-                <td>{{ question['message'] }}</td>
-                <td><img src="{{ question['image'] }}" height="150" alt="image from url"></td>
+                <td><button type="button" class="vote"><a href="/question/{{ question['id'] }}/vote_up"><i class="fa fa-thumbs-o-up"></i></a></button></td>
+                <td><button type="button" class="vote"><a href="/question/{{ question['id'] }}/vote_down"><i class="fa fa-thumbs-o-down"></i></a></button></td>
+                <td><img src="{{ question['image'] }}" height="150" alt="image from url" ></td>
             </tr>
 
             {% endfor %}
