@@ -1,6 +1,6 @@
 import bcrypt
-from psycopg2._psycopg import encrypt_password
 from psycopg2.extras import RealDictCursor
+import os
 
 import database_common
 
@@ -123,6 +123,7 @@ def get_answer_by_question_id(cursor: RealDictCursor, question_id: int) -> list:
             SELECT *
             FROM answer
             WHERE question_id = %(question_id)s
+            ORDER BY submission_time DESC
             """
     args = {'question_id': question_id}
     cursor.execute(query, args)
@@ -170,7 +171,7 @@ def get_comment_by_question_id(cursor: RealDictCursor, question_id: int) -> list
 
 
 @database_common.connection_handler
-def write_question(cursor: RealDictCursor, submission_time: str, view_number: int,
+def write_question(cursor: RealDictCursor, submission_time: str,user_id:int, view_number: int,
                    vote_number: int, title: str, message: str, image: str) -> list:
     """
     :param cursor:
@@ -191,10 +192,10 @@ def write_question(cursor: RealDictCursor, submission_time: str, view_number: in
     inserts values for columns indicated
     """
     query = """
-            INSERT INTO question (submission_time, view_number, vote_number, title, message, image)
-            VALUES (%(submission_time)s,%(view_number)s,%(vote_number)s,%(title)s,%(message)s,%(image)s)
+            INSERT INTO question (submission_time,user_id, view_number, vote_number, title, message, image)
+            VALUES (%(submission_time)s,%(user_id)s,%(view_number)s,%(vote_number)s,%(title)s,%(message)s,%(image)s)
             """
-    args = {'submission_time': submission_time, 'view_number': view_number, 'vote_number': vote_number,
+    args = {'submission_time': submission_time,'user_id':user_id, 'view_number': view_number, 'vote_number': vote_number,
             'title': title, 'message': message, 'image': image
             }
     cursor.execute(query, args)
@@ -202,8 +203,8 @@ def write_question(cursor: RealDictCursor, submission_time: str, view_number: in
 
 
 @database_common.connection_handler
-def write_answer(cursor: RealDictCursor, submission_time: str, vote_number: int,
-                 question_id: int, message: str, image: str) -> list:
+def write_answer(cursor: RealDictCursor, submission_time: str, user_id: int, vote_number: int,
+                 question_id: int, message: str, image: str, valid: bool) -> list:
     """
     :param cursor:
     RealDictCursor
@@ -221,24 +222,24 @@ def write_answer(cursor: RealDictCursor, submission_time: str, vote_number: int,
     inserts values for columns indicated
     """
     query = """
-            INSERT INTO answer (submission_time, vote_number,question_id,message,image)
-            VALUES (%(submission_time)s,%(vote_number)s,%(question_id)s,%(message)s,%(image)s)
+            INSERT INTO answer (submission_time,user_id, vote_number,question_id,message,image,valid)
+            VALUES (%(submission_time)s,%(user_id)s,%(vote_number)s,%(question_id)s,%(message)s,%(image)s,%(valid)s)
             """
-    args = {'submission_time': submission_time, 'vote_number': vote_number,
-            'question_id': question_id, 'message': message, 'image': image
+    args = {'submission_time': submission_time, 'user_id': user_id, 'vote_number': vote_number,
+            'question_id': question_id, 'message': message, 'image': image, 'valid': valid
             }
     cursor.execute(query, args)
     return "New value added"
 
 
 @database_common.connection_handler
-def write_comment(cursor: RealDictCursor, question_id: int, message: str,
+def write_comment(cursor: RealDictCursor, question_id: int,user_id:int, message: str,
                   submission_time: str, edited_count: int) -> list:
     query = """
-            INSERT INTO comment (question_id, message, submission_time, edited_count)
-            VALUES (%(question_id)s, %(message)s, %(submission_time)s, %(edited_count)s)
+            INSERT INTO comment (question_id,user_id, message, submission_time, edited_count)
+            VALUES (%(question_id)s,%(user_id)s, %(message)s, %(submission_time)s, %(edited_count)s)
             """
-    args = {'question_id': question_id, 'message': message,
+    args = {'question_id': question_id,'user_id':user_id, 'message': message,
             'submission_time': submission_time, 'edited_count': edited_count
             }
     cursor.execute(query, args)
@@ -447,13 +448,13 @@ answer.vote_number AS answer_vote_number, answer.message AS answer_message, answ
 
 
 @database_common.connection_handler
-def comment_answer(cursor: RealDictCursor, answer_id: int, message: str, submission_time: str,
+def comment_answer(cursor: RealDictCursor, answer_id: int,user_id:int, message: str, submission_time: str,
                    edited_count: int) -> list:
     query = """
-            INSERT INTO comment (answer_id, message,submission_time,edited_count)
-            VALUES (%(answer_id)s,%(message)s,%(submission_time)s,%(edited_count)s)
+            INSERT INTO comment (answer_id,user_id, message,submission_time,edited_count)
+            VALUES (%(answer_id)s,%(user_id)s,%(message)s,%(submission_time)s,%(edited_count)s)
             """
-    args = {'answer_id': answer_id, 'message': message, 'submission_time': submission_time,
+    args = {'answer_id': answer_id,'user_id':user_id, 'message': message, 'submission_time': submission_time,
             'edited_count': edited_count}
     cursor.execute(query, args)
     return "New value added"
@@ -546,10 +547,9 @@ def register_user(cursor: RealDictCursor, username: str, text_password: str, sub
     """
     if username_exists(username):
         return False
-
     query = """
-    INSERT INTO users (username,password,submission_time)
-    VALUES (%(username)s,%(password)s,%(submission_time)s)
+    INSERT INTO users (username,password,submission_time,count_questions,count_answers,count_comments,reputation)
+    VALUES (%(username)s,%(password)s,%(submission_time)s,0,0,0,0)
            """
     args = {"username": username, "password": encrypt_password(text_password), "submission_time": submission_time}
     return cursor.execute(query, args)
@@ -557,8 +557,12 @@ def register_user(cursor: RealDictCursor, username: str, text_password: str, sub
 
 def encrypt_password(password):
     # By using bcrypt, the salt is saved into the hash itself
-    hashed_bytes = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-    return hashed_bytes
+    hashed_pass = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    return hashed_pass.decode('utf-8')
+
+
+def verify_password(text_password, hashed_pass):
+    return bcrypt.checkpw(text_password.encode('utf-8'), hashed_pass.encode('utf-8'))
 
 
 @database_common.connection_handler
@@ -570,7 +574,150 @@ def users_data(cursor: RealDictCursor) -> list:
     cursor.execute(query)
     return cursor.fetchall()
 
-"ceva"
-"vv"
+@database_common.connection_handler
+def check_user(cursor, username):
+    query = """
+        SELECT id, password
+        FROM users
+        WHERE username ILIKE %(username)s;
+    """
+    data = {
+        "username": username
+    }
+    cursor.execute(query, data)
+    return cursor.fetchone()
 
-'eqwdekqdnq'
+@database_common.connection_handler
+def update_question_count(cursor: RealDictCursor, user_id: int) -> list:
+    query="""
+        UPDATE users
+        SET count_questions = count_questions+1
+        WHERE id = %(user_id)s
+        """
+    args={'user_id': user_id}
+    return cursor.execute(query, args)
+
+
+@database_common.connection_handler
+def update_answer_count(cursor: RealDictCursor, user_id: int) -> list:
+    query="""
+        UPDATE users
+        SET count_answers = count_answers+1
+        WHERE id = %(user_id)s
+        """
+    args={'user_id': user_id}
+    return cursor.execute(query, args)
+
+
+@database_common.connection_handler
+def update_comment_count(cursor: RealDictCursor,user_id: int) -> list:
+    query="""
+        UPDATE users
+        SET count_comments = count_comments+1
+        WHERE id = %(user_id)s
+        """
+    args={'user_id': user_id}
+    return cursor.execute(query, args)
+
+
+@database_common.connection_handler
+def gain_reputation(cursor: RealDictCursor, user_id: int, points: int) -> list:
+    query="""
+        UPDATE users
+        SET reputation = reputation+%(points)s
+        WHERE id = %(user_id)s
+        """
+    args={'user_id': user_id, 'points': points}
+    return cursor.execute(query, args)
+
+
+@database_common.connection_handler
+def lose_reputation(cursor: RealDictCursor, user_id: int) -> list:
+    query = """
+        UPDATE users
+        SET reputation = reputation-2
+        WHERE id = %(user_id)s
+        """
+    args={'user_id':user_id}
+    return cursor.execute(query, args)
+
+
+def random_api_key():
+    """
+    :return: salt in secret key
+    """
+    return os.urandom(100)
+
+
+@database_common.connection_handler
+def show_tags(cursor: RealDictCursor) -> list:
+    query = """
+            SELECT tag.name, count(question_tag.question_id) as question_number
+            FROM question_tag JOIN tag
+            ON question_tag.tag_id=tag.id
+            GROUP BY tag.name
+            """
+    cursor.execute(query)
+    return cursor.fetchall()
+
+
+@database_common.connection_handler
+def valid_answer(cursor: RealDictCursor, valid: bool, id: int) -> list:
+    query = """
+            UPDATE answer
+            SET valid = %(valid)s
+            WHERE id = %(id)s
+            """
+    args = {'valid': valid, 'id': id}
+    cursor.execute(query, args)
+
+
+@database_common.connection_handler
+def edit_answer(cursor: RealDictCursor, message: str, id: int) -> list:
+    query = """
+            UPDATE answer
+            SET message = %(message)s
+            WHERE id = %(id)s
+            """
+    args = {'message': message, 'id': id}
+    cursor.execute(query, args)
+
+
+@database_common.connection_handler
+def questions_by_id(cursor: RealDictCursor, user_id: int) -> list:
+    query = """
+            SELECT id, submission_time, view_number, vote_number, title, message, image
+            FROM question
+            WHERE id = %(user_id)s
+    """
+    args = {'user_id': user_id}
+    cursor.execute(query, args)
+    return cursor.fetchall()
+
+
+@database_common.connection_handler
+def answers_for_question_id(cursor: RealDictCursor, user_id: int) -> list:
+    query = """
+            SELECT answer.*, question.id, question.title
+            FROM answer
+            LEFT JOIN question
+            ON answer.question_id = question.id
+            WHERE answer.user_id = %(user_id)s
+    """
+    args = {'user_id': user_id}
+    cursor.execute(query, args)
+    return cursor.fetchall()
+
+
+@database_common.connection_handler
+def comments_for_question_id(cursor: RealDictCursor, user_id: int) -> list:
+    query = """
+            SELECT comment.*, question.id, question.title
+            FROM comment
+            LEFT JOIN question
+            ON comment.question_id = question.id
+            WHERE comment.user_id = %(user_id)s AND comment.answer_id IS NULL 
+    """
+    args = {'user_id': user_id}
+    cursor.execute(query, args)
+    return cursor.fetchall()
