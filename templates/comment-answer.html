@@ -2,13 +2,14 @@
 {% block content %}
 
 
-    <div id="subtitle_name"><h2>Comment to answer</h2></div>
+    <div class="add_text">
+        <h2>Answer comment</h2><br><br><br><br>
 
-    <form action="/answer/{{ id }}/new-comment" method="POST">
-        <textarea id="comment-answer" name="comment-answer" placeholder="Add comment" rows="5" cols="40"></textarea><br>
-        <button type="submit">Submit comment</button>
-    </form>
-
+        <form action="/answer/{{ id }}/new-comment" method="POST">
+            <h3><textarea id="comment-answer" name="comment-answer" placeholder="Add comment" rows="5" cols="40"></textarea></h3><br>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
 
 
 {% endblock %}
