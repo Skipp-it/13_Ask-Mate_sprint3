@@ -319,7 +319,7 @@ def login():
     return render_template('login.html')
 
 
-@app.route('/logout', methods= ['GET', 'POST'])
+@app.route('/logout', methods=['GET', 'POST'])
 def logout():
     if 'user_id' not in session:
         flash('You are not logged in!')
@@ -383,7 +383,6 @@ def user_page(user_id):
     questions_asked = data_manager.questions_by_id(user_id)
     answers = data_manager.answers_for_question_id(user_id)
     comments = data_manager.comments_for_question_id(user_id)
-    print(comments)
     users_data = data_manager.users_data()
     return render_template("user_id.html", users=users_data, questions_asked=questions_asked, answers=answers, comments=comments)
 
